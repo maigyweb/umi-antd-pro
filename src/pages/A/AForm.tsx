@@ -31,28 +31,35 @@ export default () => {
             name: string;
         }>
             onFinish={async (values: any) => {
-                await waitTime(500);
-                console.log(values);
-                message.success('提交成功');
+                // await waitTime(500);
+                // console.log(values);
+                // message.success('提交成功');
+                await new Promise((resolve, reject) => {
+                    fetch('http://localhost:8080/a/form?company=xxx&name=mai')
+                        .then(function(response) {
+                            resolve(response.json());
+                        })
+                }).then(res => console.log(res)) 
             }}
             params={{}}
             >
             <ProFormText
+                id="company"
                 width="md"
-                name="name"
-                label="company"
+                name="company"
+                label="公司"
                 tooltip="最长为 24 位"
                 placeholder="请输入名称"
+                rules={[
+                    {
+                    required: true,
+                    },
+                ]}
             />
             <ProFormList
                 name="users"
                 label="用户信息"
                 initialValue={[
-                    {
-                        name: '',
-                        age: '',
-                        sex: '',
-                    },
                     {
                         name: '',
                         age: '',
@@ -65,6 +72,7 @@ export default () => {
                     return (
                         <ProFormGroup>
                             <ProFormText
+                                id="name"
                                 rules={[
                                     {
                                     required: true,
