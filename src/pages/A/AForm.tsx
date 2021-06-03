@@ -1,5 +1,6 @@
 // import { useLocation, useHistory } from 'umi';
-// import { useEffect } from 'react';
+import { useThrottleEffect } from 'ahooks';
+import { Form } from 'antd';
 import ProForm, {
   ProFormText,
   ProFormList,
@@ -12,26 +13,54 @@ import ProForm, {
 //     query?: object;
 // }
 
-export default () => {
-  // useEffect(() => {
-  //     console.log('useEffect');
-  // }, []);
+const loadDetail = async () => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        company: 'google',
+        users: [
+          {
+            name: '',
+            age: 18,
+            sex: 'man',
+          },
+        ],
+      });
+    }, 300);
+  });
+};
 
+export default () => {
   // const { query } = useLocation() as Location;
   // console.log(query);
 
   // const history = useHistory();
   // console.log(history);
 
+  const [form] = Form.useForm();
+
+  const handleLoadDetail = async () => {
+    const data = await loadDetail();
+    form.setFieldsValue(data);
+  };
+
+  useThrottleEffect(() => {
+    handleLoadDetail();
+
+    return () => {
+      alert('unmount');
+    };
+  }, []);
+
   const testPostApi = () => {
-    new Promise((resolve) => {
-      fetch('http://localhost:8080/a/form', {
+    return new Promise((resolve) => {
+      fetch('http://localhost:8080/a/postform', {
         method: 'POST',
         body: JSON.stringify({ name: 'mai' }),
-      }).then(function (response) {
+      }).then((response) => {
         resolve(response.json());
       });
-    }).then(() => {});
+    });
   };
 
   return (
@@ -39,16 +68,14 @@ export default () => {
       name: string;
     }>
       onFinish={async () => {
-        // await waitTime(500);
-        // console.log(values);
-        // message.success('提交成功');
         await new Promise((resolve) => {
-          fetch('http://localhost:8080/a/form?company=xxx&name=mai').then(function (response) {
+          fetch('http://localhost:8080/a/getform?company=xxx&name=mai').then((response) => {
             resolve(response.json());
           });
-        }).then((res) => console.log(res));
+        }).then();
       }}
       params={{}}
+      form={form}
     >
       <ProFormText
         id="company"
@@ -57,11 +84,7 @@ export default () => {
         label="公司"
         tooltip="最长为 24 位"
         placeholder="请输入名称"
-        rules={[
-          {
-            required: true,
-          },
-        ]}
+        rules={[{ required: true }]}
       />
       <ProFormList
         name="users"
@@ -102,24 +125,20 @@ export default () => {
         }}
       >
         {/* <ProFormText
-                    rules={[
-                        {
-                        required: true,
-                        },
-                    ]}
-                    name="name"
-                    label="姓名"
-                />
-                <ProFormDigit name="age" label="年龄" width="sm" />
-                <ProFormSelect
-                    label="性别"
-                    name="sex"
-                    width="xs"
-                    valueEnum={{
-                        man: '男性',
-                        woman: '女性',
-                    }}
-                /> */}
+          rules={[{ required: true }]}
+          name="name"
+          label="姓名"
+        />
+        <ProFormDigit name="age" label="年龄" width="sm" />
+        <ProFormSelect
+          label="性别"
+          name="sex"
+          width="xs"
+          valueEnum={{
+            man: '男性',
+            woman: '女性',
+          }}
+        /> */}
       </ProFormList>
       <div style={{ padding: '0 0 20px' }}>
         <button id="post-btn" onClick={testPostApi}>
