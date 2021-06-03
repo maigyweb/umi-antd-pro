@@ -45,6 +45,7 @@
     "not ie <= 10"
   ],
   "dependencies": {
+    "@ahooksjs/use-url-state": "^2.5.7",
     "@ant-design/icons": "^4.0.0",
     "@ant-design/pro-card": "^1.13.0",
     "@ant-design/pro-descriptions": "^1.2.0",
